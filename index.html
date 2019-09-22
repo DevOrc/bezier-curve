@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bézier curve</title>
+    <style>
+        body{
+            margin-left: 10%;
+        }
+        h1, h2{
+
+            color: #333333;
+        }
+        #canvas{
+            border: 1px solid black;
+            background: #d1d1d1;
+        }
+
+        .control-form label{
+            margin-right: 20px;
+        }
+
+        .control-form input{
+            max-width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Bézier curve</h1>
+    <canvas id="canvas" width="500px" , height="500px">
+
+    </canvas>
+
+    <div style="margin-top:10px">
+        <form class="control-form">
+            <label style="font-size:20px">
+                <b>P<sub>0</sub></b>
+            </label>
+            <label>
+                X&ThickSpace;
+                <input type="number" value="25" id="p0x"  oninput="draw()">
+            </label>
+            <label>
+                Y&ThickSpace;
+                <input type="number" value="125" id="p0y"  oninput="draw()">
+            </label>
+        </form>
+
+        <form class="control-form">
+            <label style="font-size:20px">
+                <b>P<sub>1</sub></b>
+            </label>
+            <label>
+                X&ThickSpace;
+                <input type="number" value="200" id="p1x"  oninput="draw()">
+            </label>
+            <label>
+                Y&ThickSpace;
+                <input type="number" value="25" id="p1y"  oninput="draw()">
+            </label>
+        </form>
+
+        <form class="control-form">
+                <label style="font-size:20px">
+                    <b>P<sub>2</sub></b>
+                </label>
+                <label>
+                    X&ThickSpace;
+                    <input type="number" value="420" id="p2x" oninput="draw()">
+                </label>
+                <label>
+                    Y&ThickSpace;
+                    <input type="number" value="350" id="p2y"  oninput="draw()">
+                </label>
+            </form>
+    </div>
+
+
+    <script>
+        console.log("Starting script");
+
+        let canvas = document.getElementById("canvas");
+        let g = canvas.getContext("2d");
+
+        let p0x = document.getElementById("p0x");
+        let p0y = document.getElementById("p0y");
+
+        let p1x = document.getElementById("p1x");
+        let p1y = document.getElementById("p1y");
+
+        let p2x = document.getElementById("p2x");
+        let p2y = document.getElementById("p2y");
+
+        function draw(){
+            g.clearRect(0, 0, canvas.width, canvas.height);
+
+            let sizeString = canvas.width + "x" + canvas.height;
+            g.font = "12px Arial";
+            g.fillText(sizeString, canvas.width - 50, canvas.height - 10);  
+
+            drawPoint(p0x, p0y);
+            drawPoint(p1x, p1y);          
+            drawPoint(p2x, p2y);
+
+            drawLine(p0x, p0y, p1x, p1y);   
+            drawLine(p1x, p1y, p2x, p2y);        
+
+            drawCurve();                             
+        }
+
+        function drawCurve(){
+            g.strokeStyle = "red";
+            g.moveTo(p0x.value, canvas.height - p1x.value);
+            g.beginPath();
+
+            for(var t = 0; t <= 1; t+=.001){
+                let x = calculateBezierValue(t, p0x.value, p1x.value, p2x.value);
+                let y = calculateBezierValue(t, p0y.value, p1y.value, p2y.value);
+
+                g.lineTo(x, canvas.height - y);
+            }
+
+            g.stroke();
+        }
+
+        function calculateBezierValue(t, p0, p1, p2){
+            return (Math.pow(1 - t, 2) * p0) + (2 * t * p1 * (1 - t)) + (p2 * Math.pow(t, 2));
+        }
+
+        function drawPoint(xInput, yInput){
+            g.fillRect(xInput.value - 3, canvas.height - yInput.value - 3, 6, 6);
+        }
+
+        function drawLine(x1Input, y1Input, x2Input, y2Input){
+            let x1 = x1Input.value;
+            let y1 = canvas.height - y1Input.value;
+            let x2 = x2Input.value;
+            let y2 = canvas.height - y2Input.value;
+
+            g.strokeStyle = "gray";
+            g.beginPath();
+            g.moveTo(x1, y1);
+            g.lineTo(x2, y2);
+            g.stroke();
+        }
+
+        draw();
+        setInterval(draw, 2000);
+    </script>
+</body>
+
+</html>
